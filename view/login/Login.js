@@ -1,20 +1,36 @@
 import React, {Component} from 'react'
 import {Text, View, StyleSheet, TextInput, Button, Alert} from 'react-native'
 
+const baseUrl = 'http://127.0.0.1:9001';
 export default class extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            username: '',
+            phoneNumber: '',
             password: '',
         };
     }
 
     _onLogin() {
-        const { username, password } = this.state;
-
-        Alert.alert('Credentials', `${username} + ${password}`);
+        const { phoneNumber, password } = this.state;
+        fetch(baseUrl + '/server/api/v1/user/login', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                requestId: new Date().getUTCMilliseconds(),
+                method: 'login',
+                phoneNumber: phoneNumber,
+                password: password
+            })
+        })
+            .then((response) => response.json())
+            .then((responseJson) => {
+                console.log(responseJson)
+            });
     }
 
     _onForgetPwd() {
@@ -29,8 +45,8 @@ export default class extends Component {
         return (
             <View style={styles.container}>
                 <TextInput
-                    value={this.state.username}
-                    onChangeText={(username) => this.setState({ username })}
+                    value={this.state.phoneNumber}
+                    onChangeText={(phoneNumber) => this.setState({ phoneNumber })}
                     placeholder={'手机号码'}
                     style={styles.input}
                 />
